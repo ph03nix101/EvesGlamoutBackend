@@ -8,14 +8,12 @@ import { errorHandler } from './middleware/errorHandler';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
 // Middleware
-// TEMPORARY: Allow all origins for testing - CHANGE THIS BEFORE PRODUCTION!
 app.use(cors({
-    origin: '*',  // TODO: Change back to FRONTEND_URL after Vercel env vars are confirmed working
-    credentials: false,  // Must be false when origin is '*'
+    origin: '*',  // Allow all origins for now
+    credentials: false,
 }));
 app.use(express.json());
 
@@ -25,23 +23,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// API Routes
-app.use('/api', routes);
+// API Routes - mount without /api prefix since Vercel will handle that
+app.use('/', routes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-    console.log('');
-    console.log('🚀 ========================================');
-    console.log(`🚀  WooCommerce Backend API Server`);
-    console.log(`🚀  Port: ${PORT}`);
-    console.log(`🚀  Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🚀  Frontend: ${FRONTEND_URL}`);
-    console.log('🚀 ========================================');
-    console.log('');
-    console.log(`📍 API endpoints available at: http://localhost:${PORT}/api`);
-    console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
-    console.log('');
-});
+// Export for Vercel serverless
+export default app;
