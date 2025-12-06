@@ -12,9 +12,10 @@ const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 
 // Middleware
+// TEMPORARY: Allow all origins for testing - CHANGE THIS BEFORE PRODUCTION!
 app.use(cors({
-    origin: FRONTEND_URL,
-    credentials: true,
+    origin: '*',  // TODO: Change back to FRONTEND_URL after Vercel env vars are confirmed working
+    credentials: false,  // Must be false when origin is '*'
 }));
 app.use(express.json());
 
