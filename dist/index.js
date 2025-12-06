@@ -11,6 +11,7 @@ const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:8080';
 // Middleware
 app.use((0, cors_1.default)({
@@ -23,9 +24,25 @@ app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
-// API Routes - mount without /api prefix since Vercel will handle that
-app.use('/', routes_1.default);
+// API Routes
+app.use('/api', routes_1.default);
 // Error handling middleware (must be last)
 app.use(errorHandler_1.errorHandler);
+// Start server only if not in serverless environment
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log('');
+        console.log('🚀 ========================================');
+        console.log(`🚀  WooCommerce Backend API Server`);
+        console.log(`🚀  Port: ${PORT}`);
+        console.log(`🚀  Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`🚀  Frontend: ${FRONTEND_URL}`);
+        console.log('🚀 ========================================');
+        console.log('');
+        console.log(`📍 API endpoints available at: http://localhost:${PORT}/api`);
+        console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
+        console.log('');
+    });
+}
 // Export for Vercel serverless
 exports.default = app;
